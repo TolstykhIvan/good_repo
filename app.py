@@ -2,14 +2,15 @@ import pytest
 import json
 from app import app
 
-@pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
+app = Flask(__name__)
+time_requests_count = 0
 
-def test_time_not_zero(client):
-    resp = client.get('/time')
-    data = json.loads(resp.data)
-    assert 'time' in data
-    assert data['time'] != 0
+@app.route('/time')
+def get_time():
+    global time_requests_count
+    time_requests_count += 1
+    return jsonify({"time": int(time.time())})
+
+@app.route('/metrics')
+def metrics():
+    return jsonify({"count": time_requests_count})

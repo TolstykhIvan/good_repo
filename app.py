@@ -1,5 +1,6 @@
-from flask import Flask, jsonify
-import time
+import pytest
+import json
+from app import app
 
 app = Flask(__name__)
 time_requests_count = 0

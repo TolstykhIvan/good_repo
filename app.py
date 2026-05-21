@@ -1,11 +1,15 @@
-from flask import Flask, jsonify
-import time
+import pytest
+import json
+from app import app
 
-app = Flask(__name__)
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
 
-@app.route('/time')
-def get_time():
-    return jsonify({"time": int(time.time())})
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+def test_time_not_zero(client):
+    resp = client.get('/time')
+    data = json.loads(resp.data)
+    assert 'time' in data
+    assert data['time'] != 0
